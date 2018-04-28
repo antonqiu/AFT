@@ -1,0 +1,11 @@
+{
+  "extract.sms": {
+    "bundle_name": "com.android.providers.telephony",
+    "paths": [
+      "/data/user_de/0/com.android.providers.telephony"
+    ],
+    "target": [
+      "databases/mmssms.db"
+    ]
+  }
+}

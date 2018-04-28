@@ -80,10 +80,8 @@ class AFTBackupController(CementBaseController):
 class AFTUnpackController(CementBaseController):
     class Meta:
         label = 'unpack'
-        description = '''parse an Android device backup to a tar archive
-        
-        usage: unpack [in_backup] [out_archive] [options]
-        '''
+        description = 'parse an Android device backup to a tar archive'
+        usage = 'usage: aft unpack in_backup out_archive [options...]'
         stacked_on = 'base'
         stacked_type = 'nested'
         arguments = [
@@ -105,15 +103,22 @@ class AFTExtractionController(CementBaseController):
         description = 'extract specific information from an Android device.'
         stacked_on = 'base'
         stacked_type = 'nested'
-        arguments = [(['-o', '--outputDir'],
-                      dict(action='store', dest='outDir', help='output directory')),
-                     ]
+        arguments = [
+            (['--outDir'],
+             dict(action='store', dest='outDir', help='output directory')),
+            (['-r', '--rule'],
+             dict(action='store', dest='rule', help='custom extracting rule')),
+        ]
 
     @expose(help='extract SMS database.')
     def sms(self):
-        self.app.log.info('Inside MyBaseController.default()')
-        if self.app.pargs.foo:
-            print("Recieved option: foo => %s" % self.app.pargs.foo)
+        default_rule = './conf/bundle/sms.json'
+        if self.app.pargs.rule:
+            if not self.app.config.parse_file(self.app.pargs.rule):
+                self.app.log.warning('Failed to parse specified rule. Roll back to default.')
+        else:
+            self.app.config.parse_file(default_rule)
+        print(app.config.get_section_dict('extract.sms'))
 
     @expose(help='extract call log database.')
     def call(self):
@@ -132,6 +137,12 @@ class MyApp(CementApp):
     class Meta:
         label = 'aft'
         base_controller = 'base'
+        extensions = ['json']
+        config_handler = 'json'
+        config_extension = '.json'
+        config_files = [
+            './conf/aft.json'
+        ]
         handlers = [
             AFTBaseController,
             AFTBackupController,
@@ -141,5 +152,5 @@ class MyApp(CementApp):
 
 
 with MyApp() as app:
-    app.log.set_level('INFO')
+    app.setup()
     app.run()
