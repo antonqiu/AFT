@@ -1,3 +1,5 @@
+import sys
+
 from cement.utils import shell
 from pathlib import Path
 from core.CoreUtil import CoreUtil
@@ -30,7 +32,10 @@ class AFTExtract:
                 target_path = path + target
                 self.log.debug('extracting: %s' % target_path, __name__)
                 self.log.debug('to: %s' % rt_out_dir, __name__)
-                cmd = ['adb', 'pull', target_path, rt_out_dir]
-                exitcode = shell.exec_cmd2(cmd)
+                cmd = ['adb', 'pull', '-a', target_path, rt_out_dir]
+                stdout, stderr, exitcode = shell.exec_cmd(cmd)
                 if exitcode != 0:
-                    self.log.warning('extraction module exit unexpectedly: %d.' % exitcode)
+                    print("error: failed to extract %s" % target_path, file=sys.stderr)
+                    print(stderr, file=sys.stderr)
+                else:
+                    print('extracted: %s' % target_path)

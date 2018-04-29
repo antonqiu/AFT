@@ -1,0 +1,15 @@
+{
+  "extract.custom": {
+    "bundle_name": "com.whatsapp",
+    "paths": [
+      "/data/data/com.whatsapp"
+    ],
+    "targets": [
+      "files/Avatars/",
+      "files/me",
+      "files/me.jpeg",
+      "databases/msgstore.db",
+      "databases/wa.db"
+    ]
+  }
+}

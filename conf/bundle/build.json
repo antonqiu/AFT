@@ -1,0 +1,11 @@
+{
+  "extract.build": {
+    "bundle_name": "build.prop",
+    "paths": [
+      "/system"
+    ],
+    "targets": [
+      "build.prop"
+    ]
+  }
+}

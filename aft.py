@@ -101,7 +101,7 @@ class AFTUnpackController(CementBaseController):
 class AFTExtractionController(CementBaseController):
     class Meta:
         label = 'extract'
-        description = 'extract specific information from an Android device.'
+        description = 'extract specific information from an Android device, preserving the file time stamp and mode.'
         stacked_on = 'base'
         stacked_type = 'nested'
         arguments = [
@@ -113,29 +113,41 @@ class AFTExtractionController(CementBaseController):
 
     @expose(help='extract SMS database.')
     def sms(self):
-        default_rule = './conf/bundle/sms.json'
-        if self.app.pargs.rule:
-            if not self.app.config.parse_file(self.app.pargs.rule):
-                self.app.log.warning('Failed to parse specified rule. Roll back to default.')
-        else:
-            self.app.config.parse_file(default_rule)
-        AFTExtract(log=self.app.log, options=self.app.pargs).execute(
-            self.app.config.get('extract.sms', 'bundle_name'),
-            self.app.config.get('extract.sms', 'paths'),
-            self.app.config.get('extract.sms', 'targets'),
-        )
+        self.base('extract.sms', './conf/bundle/sms.json')
 
     @expose(help='extract call log database.')
     def call(self):
-        self.app.log.info('Inside MyBaseController.default()')
-        if self.app.pargs.foo:
-            print("Recieved option: foo => %s" % self.app.pargs.foo)
+        self.base('extract.call', './conf/bundle/call.json')
 
-    @expose(help='extract device information.')
-    def device(self):
-        self.app.log.info('Inside MyBaseController.default()')
-        if self.app.pargs.foo:
-            print("Recieved option: foo => %s" % self.app.pargs.foo)
+    @expose(help='extract Android build information.')
+    def build(self):
+        self.base('extract.build', './conf/bundle/build.json')
+
+    @expose(help='extract information based on a custom rule')
+    def custom(self):
+        if not self.app.pargs.rule:
+            print('error: -r, --rule flag must be provided in custom extraction mode.', file=sys.stderr)
+            sys.exit(1)
+        else:
+            self.base('extract.custom', None)
+
+    def base(self, section, default_rule):
+        if self.app.pargs.rule:
+            if not self.app.config.parse_file(self.app.pargs.rule):
+                self.app.log.warning('Failed to parse specified rule. Roll back to default.')
+                if not default_rule:
+                    self.app.log.error('No default rule specified. Exiting.')
+                    sys.exit(1)
+                else:
+                    self.app.config.parse_file(default_rule)
+        else:
+            self.app.config.parse_file(default_rule)
+
+        AFTExtract(log=self.app.log, options=self.app.pargs).execute(
+            self.app.config.get(section, 'bundle_name'),
+            self.app.config.get(section, 'paths'),
+            self.app.config.get(section, 'targets'),
+        )
 
 
 class MyApp(CementApp):

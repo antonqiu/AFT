@@ -1,0 +1,11 @@
+{
+  "extract.call": {
+    "bundle_name": "com.android.providers.contacts",
+    "paths": [
+      "/data/data/com.android.providers.contacts"
+    ],
+    "targets": [
+      "databases"
+    ]
+  }
+}
