@@ -1,8 +1,6 @@
 import sys
-
 from cement.utils import shell
 from pathlib import Path
-from core.CoreUtil import CoreUtil
 
 
 class AFTExtract:

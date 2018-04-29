@@ -6,6 +6,7 @@ from cement.utils import shell
 
 from core.AFTBackup import AFTBackup
 from core.AFTExtract import AFTExtract
+from core.AFTPackageManager import AFTPackageManager
 
 
 class AFTSafeHandlingWarning(shell.Prompt):
@@ -150,6 +151,23 @@ class AFTExtractionController(CementBaseController):
         )
 
 
+class AFTPackageController(CementBaseController):
+    class Meta:
+        label = 'package'
+        description = 'a package manager that lists packages and last usage info'
+        # usage = 'usage: aft unpack in_backup out_archive [options...]'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+
+    @expose(help='list all packages, with uninstalled packages')
+    def list(self):
+        AFTPackageManager(self.app.log, self.app.pargs).list()
+
+    @expose(help='displays the last time a package (or application) was used/active, in Linux epoch time')
+    def usage(self):
+        AFTPackageManager(self.app.log, self.app.pargs).usage()
+
+
 class MyApp(CementApp):
     class Meta:
         label = 'aft'
@@ -164,7 +182,8 @@ class MyApp(CementApp):
             AFTBaseController,
             AFTBackupController,
             AFTUnpackController,
-            AFTExtractionController
+            AFTExtractionController,
+            AFTPackageController
         ]
 
 
