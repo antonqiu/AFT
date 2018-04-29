@@ -1,3 +1,5 @@
+import sys
+
 from cement.utils import shell
 import hashlib
 

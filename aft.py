@@ -5,6 +5,7 @@ from cement.core.controller import CementBaseController, expose
 from cement.utils import shell
 
 from core.AFTBackup import AFTBackup
+from core.AFTExtract import AFTExtract
 
 
 class AFTSafeHandlingWarning(shell.Prompt):
@@ -105,7 +106,7 @@ class AFTExtractionController(CementBaseController):
         stacked_type = 'nested'
         arguments = [
             (['--outDir'],
-             dict(action='store', dest='outDir', help='output directory')),
+             dict(action='store', dest='out_dir', help='output directory')),
             (['-r', '--rule'],
              dict(action='store', dest='rule', help='custom extracting rule')),
         ]
@@ -118,7 +119,11 @@ class AFTExtractionController(CementBaseController):
                 self.app.log.warning('Failed to parse specified rule. Roll back to default.')
         else:
             self.app.config.parse_file(default_rule)
-        print(app.config.get_section_dict('extract.sms'))
+        AFTExtract(log=self.app.log, options=self.app.pargs).execute(
+            self.app.config.get('extract.sms', 'bundle_name'),
+            self.app.config.get('extract.sms', 'paths'),
+            self.app.config.get('extract.sms', 'targets'),
+        )
 
     @expose(help='extract call log database.')
     def call(self):
