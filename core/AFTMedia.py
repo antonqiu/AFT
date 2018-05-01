@@ -6,14 +6,15 @@ from pathlib import Path
 class AFTExtract:
 
     def __init__(self, log, options):
-        self.out_dir = './artifact'
+        self.out_dir = './analyzed/media'
         self.log = log
         self.options = options
+        self.media_dir = options.media_dir
         if self.options.out_dir:
             self.out_dir = self.options.out_dir
             self.log.debug('out_dir is overwritten: %s' % self.options.out_dir, __name__)
 
-    def execute(self, bundle_name, paths, targets):
+    def geotag(self, bundle_name, paths, targets):
         if len(paths) < 1 or len(targets) < 1:
             self.log.error('Invalid rule: paths or targets is empty')
         rt_out_dir = self.out_dir + '/' + bundle_name
@@ -27,10 +28,7 @@ class AFTExtract:
                 path += '/'
             for target in targets:
                 target.rstrip('/')
-                if target != '*':
-                    target_path = path + target
-                else:
-                    target_path = path.rstrip('/')
+                target_path = path + target
                 self.log.debug('extracting: %s' % target_path, __name__)
                 self.log.debug('to: %s' % rt_out_dir, __name__)
                 cmd = ['adb', 'pull', '-a', target_path, rt_out_dir]
@@ -39,4 +37,4 @@ class AFTExtract:
                     print("error: failed to extract %s" % target_path, file=sys.stderr)
                     print(stderr, file=sys.stderr)
                 else:
-                    print('extracted: %s to %s' % (target_path, rt_out_dir))
+                    print('extracted: %s' % target_path)

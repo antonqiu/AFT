@@ -1,5 +1,13 @@
 {
     "aft": {
         "debug": "False"
+    },
+    "aft.media": {
+        "paths": [
+            "/sdcard/DCIM/Camera"
+        ],
+        "targets": [
+            "*"
+        ]
     }
 }

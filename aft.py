@@ -172,6 +172,31 @@ class AFTPackageController(CementBaseController):
         AFTPackageManager(self.app.log, self.app.pargs).usage()
 
 
+class AFTMediaController(CementBaseController):
+    class Meta:
+        label = 'media'
+        description = 'acquire and analyze media files'
+        usage = 'usage: aft media command [options...]'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['media_dir'],
+             dict(action='store', help='path of the media directory', nargs='?', default='./artifact/media')),
+            (['--outDir'],
+             dict(action='store', dest='out_dir', help='output directory')),
+        ]
+
+    @expose(help='acquire all multimedia files')
+    def download(self):
+        paths = self.app.config.get('aft.media', 'paths')
+        targets = self.app.config.get('aft.media', 'targets')
+        AFTExtract(self.app.log, self.app.pargs).execute('media', paths, targets)
+
+    @expose(help='analyze metadata and export geo tags as GeoJSON list')
+    def geotag(self):
+        AFTPackageManager(self.app.log, self.app.pargs).usage()
+
+
 class MyApp(CementApp):
     class Meta:
         label = 'aft'
@@ -187,7 +212,8 @@ class MyApp(CementApp):
             AFTBackupController,
             AFTUnpackController,
             AFTExtractionController,
-            AFTPackageController
+            AFTPackageController,
+            AFTMediaController
         ]
 
 
