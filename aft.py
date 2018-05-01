@@ -6,6 +6,7 @@ from cement.utils import shell
 
 from core.AFTBackup import AFTBackup
 from core.AFTExtract import AFTExtract
+from core.AFTMedia import AFTMedia
 from core.AFTPackageManager import AFTPackageManager
 
 
@@ -194,7 +195,7 @@ class AFTMediaController(CementBaseController):
 
     @expose(help='analyze metadata and export geo tags as GeoJSON list')
     def geotag(self):
-        AFTPackageManager(self.app.log, self.app.pargs).usage()
+        AFTMedia(self.app.log, self.app.pargs).geotag()
 
 
 class MyApp(CementApp):
