@@ -155,9 +155,13 @@ class AFTPackageController(CementBaseController):
     class Meta:
         label = 'package'
         description = 'a package manager that lists packages and last usage info'
-        # usage = 'usage: aft unpack in_backup out_archive [options...]'
+        usage = 'usage: aft package command [keyword] [options...]'
         stacked_on = 'base'
         stacked_type = 'nested'
+        arguments = [
+            (['keyword'],
+             dict(action='store', help='path of input adb backup', nargs='?'))
+        ]
 
     @expose(help='list all packages, with uninstalled packages')
     def list(self):
